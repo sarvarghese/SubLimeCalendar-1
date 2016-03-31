@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile 'com.roomorama:caldroid:3.0.1'
     compile 'com.github.satyan:sugar:1.4'
+    compile 'com.github.alamkanak:android-week-view:1.2.6'
 }
