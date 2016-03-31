@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.oose.sublimecalendar">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:name="com.orm.SugarApp">
+
+        <!-- sugar ORM website: http://satyan.github.io/sugar/index.html-->
+        <!-- Name of the generated sqlite database file.-->
+        <meta-data android:name="DATABASE" android:value="SLC_sugar_database.db" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ActivityAddEvent" />
+        <activity android:name=".ActivitySingleEventView"></activity>
+    </application>
+
+</manifest>
