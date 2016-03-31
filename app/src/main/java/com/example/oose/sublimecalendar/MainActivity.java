@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
     @Override
     public void onClick(View v) {
         /* for example on how to go from one fragment to another
