@@ -49,7 +49,18 @@ public class MainActivity extends AppCompatActivity
         final CaldroidListener calListener = new CaldroidListener() {
             @Override
             public void onSelectDate(java.util.Date date, View view) {
-                Toast.makeText(getApplicationContext(),"HI YA",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), formatter.format(date), Toast.LENGTH_SHORT).show();
+                Fragment dayViewFragment = new FragmentDayView();
+                //Bundle selectDate = new Bundle()
+                if (dayViewFragment != null) {
+                    /** Kristina, this is where you would put the code to go to day view
+                     * just change the above new fragment class to your day view java class **/
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.mainCalendarContainer, dayViewFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+
             }
         };
 
