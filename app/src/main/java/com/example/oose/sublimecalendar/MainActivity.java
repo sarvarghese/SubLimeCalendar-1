@@ -163,15 +163,6 @@ public class MainActivity extends AppCompatActivity
                 this.startActivity(myIntent); //start new activity, old one does not go away
                 break;
         }
-
-        Fragment weekViewFragment = new FragmentWeekView();
-        if (weekViewFragment != null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainCalendarContainer, weekViewFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
-
     } //end of onClick method
 
 } //end of activity class
