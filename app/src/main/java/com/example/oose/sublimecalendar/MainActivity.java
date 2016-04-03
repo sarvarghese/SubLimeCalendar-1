@@ -126,6 +126,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        Fragment weekViewFragment = new FragmentWeekView();
+        if (weekViewFragment != null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.mainCalendarContainer, weekViewFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
@@ -164,13 +172,7 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
-        Fragment weekViewFragment = new FragmentWeekView();
-        if (weekViewFragment != null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainCalendarContainer, weekViewFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
+
 
     } //end of onClick method
 

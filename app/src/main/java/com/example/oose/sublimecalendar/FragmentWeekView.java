@@ -34,18 +34,16 @@ public class FragmentWeekView extends Fragment implements WeekView.EventClickLis
         super.onCreate(savedInstanceState);
     }
 
+    @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
-        View weekView = inflater.inflate(R.layout.fragment_week_view, container, false);
 
+        View weekView = inflater.inflate(R.layout.fragment_week_view, container, false);
         //weekView.setContentView(R.layout.fragment_week_view);
 
         // Get a reference for the week view in the layout.
-        mWeekView = (WeekView) weekView.findViewById(R.id.weekView);
+        mWeekView = (WeekView) weekView.findViewById(R.id.weekViewFull);
 
         mWeekView.setOnEventClickListener(this);
-
-        // The week view has infinite scrolling horizontally. We have to provide the events of a
-        // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(this);
 
         return weekView;
