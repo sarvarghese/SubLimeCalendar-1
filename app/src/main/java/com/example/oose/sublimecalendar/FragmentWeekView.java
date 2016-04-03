@@ -42,7 +42,6 @@ public class FragmentWeekView extends Fragment implements WeekView.EventClickLis
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) weekView.findViewById(R.id.weekView);
 
-        // Show a toast message about the touched event.
         mWeekView.setOnEventClickListener(this);
 
         // The week view has infinite scrolling horizontally. We have to provide the events of a
