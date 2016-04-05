@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 /**
  * Created by Joseph on 4/4/2016.
  */
-public class EventListView extends Fragment implements View.OnClickListener {
+public class FragmentEventListView extends Fragment implements View.OnClickListener {
     private RecyclerView mEventRecycler;
     private RecyclerView.Adapter mAdapter;
     private DividerItemDecoration mDividerDecoration;

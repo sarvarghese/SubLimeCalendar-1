@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity
             }
 
         } else if (id == R.id.nav_manage) {
-            Fragment eventListFragment = new EventListView();
+            Fragment eventListFragment = new FragmentEventListView();
             if(eventListFragment != null) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.mainCalendarContainer, eventListFragment);
