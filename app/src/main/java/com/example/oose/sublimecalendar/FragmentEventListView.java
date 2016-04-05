@@ -5,30 +5,42 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-public class ActivityEventListView extends AppCompatActivity implements View.OnClickListener{
+/**
+ * Created by Joseph on 4/4/2016.
+ */
+public class FragmentEventListView extends Fragment implements View.OnClickListener {
+    private RecyclerView mEventRecycler;
+    private RecyclerView.Adapter mAdapter;
+    private DividerItemDecoration mDividerDecoration;
 
-    private RecyclerView eventRecycler;
-    private RecyclerView.Adapter adapter;
-    private DividerItemDecoration dividerDecoration;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_event_list_view);
+        View view = inflater.inflate(R.layout.fragment_event_list_view, container, false);
 
-        eventRecycler = (RecyclerView) findViewById(R.id.eventListRecycler);
-        adapter = new EventRecyclerAdapter(this);
-        eventRecycler.setAdapter(adapter);
+        mEventRecycler = (RecyclerView) view.findViewById(R.id.eventListRecycler);
+        mAdapter = new EventRecyclerAdapter(getContext());
+        mEventRecycler.setAdapter(mAdapter);
 
-        eventRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mEventRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        dividerDecoration = new DividerItemDecoration(this);
-        eventRecycler.addItemDecoration(dividerDecoration);
+        mDividerDecoration = new DividerItemDecoration(getContext());
+        mEventRecycler.addItemDecoration(mDividerDecoration);
+
+        return view;
     }
 
     @Override
