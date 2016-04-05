@@ -18,7 +18,6 @@ import android.view.View;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -168,8 +167,13 @@ public class MainActivity extends AppCompatActivity
             }
 
         } else if (id == R.id.nav_manage) {
-            Intent eventListIntent = new Intent(this, ActivityEventListView.class);
-            this.startActivity(eventListIntent); //start new activity, old one does not go away
+            Fragment eventListFragment = new EventListView();
+            if(eventListFragment != null) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.mainCalendarContainer, eventListFragment);
+                transaction.addToBackStack("eventListView");
+                transaction.commit();
+            }
 
         } else if (id == R.id.nav_share) {
 
