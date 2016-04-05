@@ -29,7 +29,6 @@
         <activity android:name=".ActivityAddEvent" />
         <activity android:name=".ActivitySingleEventView" />
         <activity android:name=".ActivityEditEvent"></activity>
-        <activity android:name=".ActivityEventListView"></activity>
     </application>
 
 </manifest>
