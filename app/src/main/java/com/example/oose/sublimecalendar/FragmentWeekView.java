@@ -15,9 +15,12 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,9 +47,23 @@ public class FragmentWeekView extends Fragment implements WeekView.EventClickLis
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) weekView.findViewById(R.id.weekViewFull);
 
+        Date dateSelected;
+        Calendar day= Calendar.getInstance();
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+        String formattedDate = df.format(day.getTime());
+
+        // Now formattedDate have current date/time
+        try{
+            dateSelected=df.parse(formattedDate);
+            day.setTime(dateSelected);
+        }
+        catch(ParseException e){
+            e.printStackTrace();
+        }
+
         mWeekView.setOnEventClickListener(this);
         mWeekView.setMonthChangeListener(this);
-
+        mWeekView.goToDate(day);
         return weekView;
     }
 
