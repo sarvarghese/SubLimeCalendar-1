@@ -133,12 +133,34 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        if (id == R.id.month_view) {
+            CaldroidFragment caldroidFragment = new CaldroidFragment();
+            final CaldroidListener calListener = new CaldroidListener() {
+                @Override
+                public void onSelectDate(java.util.Date date, View view) {
+                    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                    String day_string = df.format(date);
+                    Fragment dayViewFragment = new FragmentDayView();
+                    Bundle selectDate = new Bundle();
+                    selectDate.putString("selectedDate", day_string);
+                    dayViewFragment.setArguments(selectDate);
+                    if (dayViewFragment != null) {
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.mainCalendarContainer, dayViewFragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }}};
+            caldroidFragment.setCaldroidListener(calListener);
+            Bundle args = new Bundle();
+            Calendar cal = Calendar.getInstance();
+            args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
+            args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
+            caldroidFragment.setArguments(args);
+            FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.mainCalendarContainer, caldroidFragment);
+            transaction .commit();
 
-
-        if (id == R.id.nav_camera) {
-
-
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.week_view) {
             Fragment weekViewFragment = new FragmentWeekView();
             if (weekViewFragment != null) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -147,7 +169,7 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
             }
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.day_view) {
             Fragment dayViewFragment = new FragmentDayView();
 
             java.util.Date today_date = new java.util.Date();
@@ -166,7 +188,7 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
             }
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.Event_list_view) {
             Fragment eventListFragment = new FragmentEventListView();
             if(eventListFragment != null) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
