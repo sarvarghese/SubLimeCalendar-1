@@ -15,15 +15,19 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Calendar;
 
 public class ActivityAddEvent extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener{
 
 
-    private EditText nameTB,dateTB,locationTB,emailListTB,startTimeTB,finishTimeTB;
+    private EditText nameTB,dateTB,locationTB,emailListTB,startTimeTB,finishTimeTB,noteTB;
     private Button saveButton;
-    private TextView startTime,finishTime,date;
-    private String name,location,emailList,eventType;
+    private TextView date,startTime,finishTime;
+    private String name,selectedDate="",location,emailList,eventType,selectedStartTime="",selectedFinishTime="",note;
+    private Date d;
+    private Time st,ft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,7 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
         nameTB=(EditText) findViewById(R.id.addEventNameTB);
         locationTB=(EditText) findViewById(R.id.addEventLocationTB);
         emailListTB=(EditText) findViewById(R.id.addEventEmailListTB);
+        noteTB=(EditText) findViewById(R.id.addEventNoteTB);
         /*code on date and time picker: http://stackoverflow.com/questions/17901946/timepicker-dialog-from-clicking-edittext */
         date=(TextView) findViewById(R.id.addEventDateTB);
         date.setOnClickListener(new View.OnClickListener() {
@@ -49,15 +54,16 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                     public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
                     /*      Your code   to get date and time    */
                         selectedmonth = selectedmonth + 1;
-                        date.setText("" + selectedday + "/" + selectedmonth + "/" + selectedyear);
+                        selectedDate=("" + selectedmonth + "-" + selectedday + "-" + selectedyear);
+                        d=new Date(selectedyear,selectedmonth,selectedday);
+                        date.setText("" + selectedmonth + "-" + selectedday + "-" + selectedyear);
                     }
                 }, mYear, mMonth, mDay);
                 mDatePicker.setTitle("Select Date");
                 mDatePicker.show();
             }
         });
-        //startTimeTB=(EditText) findViewById(R.id.addEventStartTimeTB);
-        //finishTimeTB=(EditText) findViewById(R.id.addEventFinishTimeTB);
+
         startTime=(TextView) findViewById(R.id.addEventStartTimeTB);
         startTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +75,8 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                 mTimePicker = new TimePickerDialog(ActivityAddEvent.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        selectedStartTime=(selectedHour + ":" + selectedMinute);
+                        st=new Time(selectedHour,selectedMinute,0);
                         startTime.setText(selectedHour + ":" + selectedMinute);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -88,6 +96,8 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                 mTimePicker = new TimePickerDialog(ActivityAddEvent.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        selectedFinishTime=(selectedHour + ":" + selectedMinute);
+                        ft=new Time(selectedHour,selectedMinute,0);
                         finishTime.setText(selectedHour + ":" + selectedMinute);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -96,7 +106,6 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
 
             }
         });
-        //dateTB=(EditText) findViewById(R.id.addEventDateTB);
 
         saveButton = (Button) findViewById(R.id.addEventSaveButton);
         saveButton.setOnClickListener(this);
@@ -122,17 +131,48 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
 
         switch (v.getId()){
             case R.id.addEventSaveButton: //if save button was pressed
+
+                //pull the inputed user data from the edit fields, no need to pull the times and dates
+                //because they are auto grabed when selected
+                name=nameTB.getText().toString();
+                location=locationTB.getText().toString();
+                emailList=emailListTB.getText().toString();
+                note=noteTB.getText().toString();
+
+                //error check; make sure user inputed data into the name, date and time fields
+                if(name.compareTo("")==0){
+                    Toast.makeText(getApplicationContext(), "Please fill out the name field", Toast.LENGTH_SHORT).show();
+                    break;}
+                if(selectedDate.compareTo("")==0){
+                    Toast.makeText(getApplicationContext(), "Please select the date", Toast.LENGTH_SHORT).show();
+                    break;}
+                if(selectedStartTime.compareTo("")==0){
+                    Toast.makeText(getApplicationContext(), "Please state the start time", Toast.LENGTH_SHORT).show();
+                    break;}
+                if(selectedFinishTime.compareTo("")==0){
+                    Toast.makeText(getApplicationContext(), "Please state the finish time", Toast.LENGTH_SHORT).show();
+                    break;}
+
+                try {
+                    Event e = new Event(name, d, st, ft, location, emailList, eventType, note);
+                    e.save();
+                }
+                catch(Exception e){
+                    Toast.makeText(getApplicationContext(), "Unable to save event", Toast.LENGTH_SHORT).show();
+                    super.onBackPressed(); //same effect as pressing the back button
+                    break;
+            }
                 Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
                 super.onBackPressed(); //same effect as pressing the back button
                 break;
         }
-
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // An item was selected. You can retrieve the selected item using
         String item = parent.getItemAtPosition(position).toString();
+        eventType=item;
         // Showing selected spinner item
         //Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
     }

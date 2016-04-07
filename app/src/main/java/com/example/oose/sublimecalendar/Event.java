@@ -16,7 +16,6 @@ public class Event extends SugarRecord {
     Date date;
     Time startTime;
     Time finishTime;
-    int duration;
     String location;
     String emailList;
     String eventType;

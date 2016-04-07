@@ -82,4 +82,6 @@ public class FragmentWeekView extends Fragment implements WeekView.EventClickLis
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
         return events;
     }
+
+
 }
