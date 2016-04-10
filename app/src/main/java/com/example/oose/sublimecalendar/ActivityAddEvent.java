@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,9 +16,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class ActivityAddEvent extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener{
 
@@ -26,8 +29,8 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
     private Button saveButton;
     private TextView date,startTime,finishTime;
     private String name,selectedDate="",location,emailList,eventType,selectedStartTime="",selectedFinishTime="",note;
-    private Date d;
-    private Time st,ft;
+    private String selectedDateString,selectedStartTimeString,selectedFinishTimeString;
+    private Long microSecDate,microSecStartTime,microSecFinishTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +58,16 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                     /*      Your code   to get date and time    */
                         selectedmonth = selectedmonth + 1;
                         selectedDate=("" + selectedmonth + "-" + selectedday + "-" + selectedyear);
-                        d=new Date(selectedyear,selectedmonth,selectedday);
+                        //Code for convert date to long micro seconds:
+                        // http://stackoverflow.com/questions/8427169/converting-a-date-string-into-milliseconds-in-java
+                        try {
+                            selectedDateString= selectedmonth+" "+selectedday+" "+selectedyear;
+                            Date date = new SimpleDateFormat("MM dd yyyy", Locale.ENGLISH).parse(selectedDateString);
+                            microSecDate=date.getTime();
+                            Log.wtf("work pls",date.getTime()+"");
+                        }catch(Exception e){
+                            //error_lol
+                        }
                         date.setText("" + selectedmonth + "-" + selectedday + "-" + selectedyear);
                     }
                 }, mYear, mMonth, mDay);
@@ -76,7 +88,13 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         selectedStartTime=(selectedHour + ":" + selectedMinute);
-                        st=new Time(selectedHour,selectedMinute,0);
+                        selectedStartTimeString=selectedHour + ":" + selectedMinute;
+                        try {
+                            Date stime = new SimpleDateFormat("hh:mm", Locale.ENGLISH).parse(selectedStartTimeString);
+                            microSecStartTime=stime.getTime();
+                        } catch (ParseException e) {
+                            //error_lol
+                        }
                         startTime.setText(selectedHour + ":" + selectedMinute);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -97,7 +115,13 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         selectedFinishTime=(selectedHour + ":" + selectedMinute);
-                        ft=new Time(selectedHour,selectedMinute,0);
+                        selectedFinishTimeString=selectedHour + ":" + selectedMinute;
+                        try {
+                            Date ftime = new SimpleDateFormat("hh:mm", Locale.ENGLISH).parse(selectedFinishTimeString);
+                            microSecFinishTime=ftime.getTime();
+                        } catch (ParseException e) {
+                            //error_lol
+                        }
                         finishTime.setText(selectedHour + ":" + selectedMinute);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -154,7 +178,7 @@ public class ActivityAddEvent extends AppCompatActivity implements View.OnClickL
                     break;}
 
                 try {
-                    Event e = new Event(name, d, st, ft, location, emailList, eventType, note);
+                    Event e = new Event(name, microSecDate, microSecStartTime, microSecFinishTime, location, emailList, eventType, note);
                     e.save();
                 }
                 catch(Exception e){

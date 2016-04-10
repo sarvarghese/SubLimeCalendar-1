@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -63,9 +64,17 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         if(current != null) {
             holder.eventName.setText(current.name);
 
-            holder.eventDate.setText(dateToString(current.date));
-            holder.eventDuration.setText(timeToString(current.startTime) +
-                    " - " + timeToString(current.finishTime));
+            //holder.eventDate.setText(dateToString(current.date));
+            //http://stackoverflow.com/questions/11755534/how-to-convert-long-date-value-to-mm-dd-yyyy-format
+            Date d=new Date(current.date);
+            SimpleDateFormat df2=new SimpleDateFormat("MM/dd/yyyy");
+            holder.eventDate.setText(df2.format(d));
+            /*holder.eventDuration.setText(timeToString(current.startTime) +
+                    " - " + timeToString(current.finishTime));*/
+            Date starttimestamp= new Date(current.startTime);
+            Date finishtimestamp= new Date(current.finishTime);
+            holder.eventDuration.setText(starttimestamp.getHours()+":"+starttimestamp.getMinutes()
+                    + " - " + finishtimestamp.getHours()+":"+finishtimestamp.getMinutes());
 
             if(current.eventType != null) {
                 switch (current.eventType) {

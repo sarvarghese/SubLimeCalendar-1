@@ -2,8 +2,10 @@ package com.example.oose.sublimecalendar;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,20 +17,22 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class ActivityEditEvent extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener{
 
     private EditText nameTB,dateTB,locationTB,emailListTB,startTimeTB,finishTimeTB,noteTB;
     private Button saveButton;
     private TextView startTime,finishTime,date;
-    private String name,selectedDate="",location,emailList,eventType,selectedStartTime="",selectedFinishTime="",note;
-    private Date d;
-    private Time st,ft;
+    private String name,selectedDate="",location="",emailList="",eventType="",selectedStartTime="",selectedFinishTime="",note="";
+    private String selectedDateString,selectedStartTimeString,selectedFinishTimeString;
+    private Long microSecDate,microSecStartTime,microSecFinishTime;
     private Bundle extrasBundle;
-    private int selectedEventID;
+    private Long selectedEventID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +41,7 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
 
         if( !(extrasBundle.isEmpty()) && (extrasBundle.containsKey("eventID")) ){
             //checks if bundle is empty and if it has the event id
-            selectedEventID=extrasBundle.getInt("eventID");
+            selectedEventID=extrasBundle.getLong("eventID");
         }
         else{
             //either bundle was empty or did not have parse id. should find a way to go back to previous activity
@@ -46,6 +50,7 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
+
         nameTB=(EditText) findViewById(R.id.editEventNameTB);
         locationTB=(EditText) findViewById(R.id.editEventLocationTB);
         emailListTB=(EditText) findViewById(R.id.editEventEmailListTB);
@@ -67,7 +72,16 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
                     /*      Your code   to get date and time    */
                         selectedmonth = selectedmonth + 1;
                         selectedDate=("" + selectedmonth + "-" + selectedday + "-" + selectedyear);
-                        d=new Date(selectedyear,selectedmonth,selectedday);
+                        //Code for convert date to long micro seconds:
+                        // http://stackoverflow.com/questions/8427169/converting-a-date-string-into-milliseconds-in-java
+                        try {
+                            selectedDateString= selectedmonth+" "+selectedday+" "+selectedyear;
+                            Date date = new SimpleDateFormat("MM dd yyyy", Locale.ENGLISH).parse(selectedDateString);
+                            microSecDate=date.getTime();
+                            Log.wtf("work pls", date.getTime() + "");
+                        }catch(Exception e){
+                            //error_lol
+                        }
                         date.setText("" + selectedday + "/" + selectedmonth + "/" + selectedyear);
                     }
                 }, mYear, mMonth, mDay);
@@ -89,7 +103,13 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         selectedStartTime=(selectedHour + ":" + selectedMinute);
-                        st=new Time(selectedHour,selectedMinute,0);
+                        selectedStartTimeString=selectedHour + ":" + selectedMinute;
+                        try {
+                            Date stime = new SimpleDateFormat("hh:mm", Locale.ENGLISH).parse(selectedStartTimeString);
+                            microSecStartTime=stime.getTime();
+                        } catch (ParseException e) {
+                            //error_lol
+                        }
                         startTime.setText(selectedHour + ":" + selectedMinute);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -110,7 +130,13 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         selectedFinishTime=(selectedHour + ":" + selectedMinute);
-                        ft=new Time(selectedHour,selectedMinute,0);
+                        selectedFinishTimeString=selectedHour + ":" + selectedMinute;
+                        try {
+                            Date ftime = new SimpleDateFormat("hh:mm", Locale.ENGLISH).parse(selectedFinishTimeString);
+                            microSecFinishTime=ftime.getTime();
+                        } catch (ParseException e) {
+                            //error_lol
+                        }
                         finishTime.setText(selectedHour + ":" + selectedMinute);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -133,13 +159,22 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
         spinner.setAdapter(adapter);
 
         Event e= Event.findById(Event.class,selectedEventID);
+        Calendar calendarStartTime = Calendar.getInstance();
+        Calendar calendarEndTime = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
 
         saveButton = (Button) findViewById(R.id.editEventSaveButton);
         saveButton.setOnClickListener(this);
         nameTB.setText(e.name);
-        dateTB.setText(e.date.toString());
-        startTimeTB.setText(e.startTime.toString());
-        finishTimeTB.setText(e.finishTime.toString());
+        calendar.setTime(new java.util.Date(e.date));
+        date.setText(calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR));
+        microSecDate=calendar.getTimeInMillis();
+        calendar.setTime(new java.util.Date(e.startTime));
+        startTime.setText(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+        microSecStartTime=calendar.getTimeInMillis();
+        calendar.setTime(new java.util.Date(e.finishTime));
+        finishTime.setText(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+        microSecFinishTime=calendar.getTimeInMillis();
         locationTB.setText(e.location);
         emailListTB.setText(e.emailList);
         //eventTypeTB.setText(e.eventType);
@@ -166,19 +201,28 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
                 if(name.compareTo("")==0){
                     Toast.makeText(getApplicationContext(), "Please fill out the name field", Toast.LENGTH_SHORT).show();
                     break;}
-                if(selectedDate.compareTo("")==0){
-                    Toast.makeText(getApplicationContext(), "Please select the date", Toast.LENGTH_SHORT).show();
-                    break;}
-                if(selectedStartTime.compareTo("")==0){
-                    Toast.makeText(getApplicationContext(), "Please state the start time", Toast.LENGTH_SHORT).show();
-                    break;}
-                if(selectedFinishTime.compareTo("")==0){
-                    Toast.makeText(getApplicationContext(), "Please state the finish time", Toast.LENGTH_SHORT).show();
-                    break;}
 
                 try {
-                    Event e = new Event(name, d, st, ft, location, emailList, eventType, note);
+                    //Event e = new Event(name, microSecDate, microSecStartTime, microSecFinishTime, location, emailList, eventType, note);
+                    Event e= Event.findById(Event.class,selectedEventID);
+                    e.name=name;
+                    e.date=microSecDate;
+                    e.startTime=microSecStartTime;
+                    e.finishTime=microSecFinishTime;
+                    e.location=location;
+                    e.emailList=emailList;
+                    e.eventType=eventType;
+                    e.eventNote=note;
                     e.save();
+                    Toast.makeText(getApplicationContext(), "Saved Changes", Toast.LENGTH_SHORT).show();
+                    //super.onBackPressed(); //same effect as pressing the back button
+                    //break;
+                    Intent myIntent=null;
+                    myIntent = new Intent(this, ActivitySingleEventView.class);
+                    myIntent.putExtra("eventID",e.getId() ); //Optional parameters
+                    this.startActivity(myIntent);
+                    finish();
+                    break;
                 }
                 catch(Exception e){
                     Toast.makeText(getApplicationContext(), "Unable to save event", Toast.LENGTH_SHORT).show();
@@ -186,9 +230,7 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
                     break;
                 }
 
-                Toast.makeText(getApplicationContext(), "Saved Changes", Toast.LENGTH_SHORT).show();
-                super.onBackPressed(); //same effect as pressing the back button
-                break;
+
         }
     }
 

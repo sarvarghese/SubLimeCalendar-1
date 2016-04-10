@@ -11,13 +11,14 @@ import android.widget.Toast;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Calendar;
 
 public class ActivitySingleEventView extends AppCompatActivity implements View.OnClickListener {
 
     private TextView name,date,startTime,finishTime,location,emailList, eventType, note;
     private Button editButton, shareButton;
     private Bundle extrasBundle;
-    private int selectedEventID;
+    private Long selectedEventID;
     private String emList="";
 
     @Override
@@ -27,7 +28,7 @@ public class ActivitySingleEventView extends AppCompatActivity implements View.O
 
         if( !(extrasBundle.isEmpty()) && (extrasBundle.containsKey("eventID")) ){
             //checks if bundle is empty and if it has the event id
-            selectedEventID=extrasBundle.getInt("eventID");
+            selectedEventID=extrasBundle.getLong("eventID");
         }
         else{
             //either bundle was empty or did not have parse id. should find a way to go back to previous activity
@@ -36,7 +37,14 @@ public class ActivitySingleEventView extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_event_view);
 
-        Event e= Event.findById(Event.class,selectedEventID);
+        Event e= Event.findById(Event.class, selectedEventID);
+        Calendar calendarStartTime = Calendar.getInstance();
+        Calendar calendarEndTime = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
+
+        //java.util.Date d= new java.util.Date(e.date);
+        //java.util.Date stDate= new java.util.Date(e.startTime);
+        //java.util.Date ftDate= new java.util.Date(e.finishTime);
 
         name =(TextView) findViewById(R.id.singleEventNameField);
         date =(TextView) findViewById(R.id.singleEventDateField);
@@ -47,10 +55,13 @@ public class ActivitySingleEventView extends AppCompatActivity implements View.O
         eventType =(TextView) findViewById(R.id.singleEventEventTypeField);
         note =(TextView) findViewById(R.id.singleEventNoteField);
 
+        calendar.setTime(new java.util.Date(e.date));
         name.setText(e.name);
-        date.setText(e.date.toString());
-        startTime.setText(e.startTime.toString());
-        finishTime.setText(e.finishTime.toString());
+        date.setText(calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR));
+        calendar.setTime(new java.util.Date(e.startTime));
+        startTime.setText(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+        calendar.setTime(new java.util.Date(e.finishTime));
+        finishTime.setText(calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE));
         location.setText(e.location);
         emailList.setText(e.emailList);
         emList=e.emailList;
@@ -72,8 +83,9 @@ public class ActivitySingleEventView extends AppCompatActivity implements View.O
             case R.id.singleEventEditButton:
                 //link on starting new activity:http://stackoverflow.com/questions/4186021/how-to-start-new-activity-on-button-click
                 myIntent = new Intent(this, ActivityEditEvent.class);
-                myIntent.putExtra("eventID", eventType.getId()); //Optional parameters
+                myIntent.putExtra("eventID", selectedEventID); //Optional parameters
                 this.startActivity(myIntent);
+                finish();
                 break;
 
             case R.id.singleEventShareButton:
