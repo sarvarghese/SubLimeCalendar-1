@@ -1,5 +1,6 @@
 package com.example.oose.sublimecalendar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,10 +50,8 @@ public class MainActivity extends AppCompatActivity
         final CaldroidListener calListener = new CaldroidListener() {
             @Override
             public void onSelectDate(java.util.Date date, View view) {
-                //Toast.makeText(getApplicationContext(), formatter.format(date), Toast.LENGTH_SHORT).show();
                 DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
                 String day_string = df.format(date);
-                //System.out.format("==================%s================\n", day_string);
 
                 Fragment dayViewFragment = new FragmentDayView();
                 Bundle selectDate = new Bundle();
@@ -227,8 +227,7 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
-
-
     } //end of onClick method
+
 
 } //end of activity class
