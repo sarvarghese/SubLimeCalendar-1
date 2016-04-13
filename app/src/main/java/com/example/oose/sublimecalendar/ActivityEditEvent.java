@@ -1,5 +1,6 @@
 package com.example.oose.sublimecalendar;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -215,12 +216,9 @@ public class ActivityEditEvent extends AppCompatActivity implements View.OnClick
                     e.eventNote=note;
                     e.save();
                     Toast.makeText(getApplicationContext(), "Saved Changes", Toast.LENGTH_SHORT).show();
-                    //super.onBackPressed(); //same effect as pressing the back button
-                    //break;
-                    Intent myIntent=null;
-                    myIntent = new Intent(this, ActivitySingleEventView.class);
-                    myIntent.putExtra("eventID",e.getId() ); //Optional parameters
-                    this.startActivity(myIntent);
+
+                    Intent returnIntent = new Intent();
+                    setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                     break;
                 }
